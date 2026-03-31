@@ -1,48 +1,83 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Home, Briefcase, User, MessageCircle } from "lucide-react";
+import React from "react";
+import { motion, Variants } from "framer-motion";
+import { Home, Briefcase, User, MessageCircle, LucideIcon } from "lucide-react";
 
-const navItems = [
+type NavItem = {
+  icon: LucideIcon;
+  label: string;
+  href: string;
+  smooth: boolean;
+};
+
+const navItems: NavItem[] = [
   { icon: Home, label: "Home", href: "#", smooth: true },
   { icon: Briefcase, label: "Projects", href: "#projects", smooth: true },
   { icon: User, label: "About", href: "#about", smooth: true },
-  { icon: MessageCircle, label: "Contact", href: "https://wa.me/919591178734", smooth: false },
+  {
+    icon: MessageCircle,
+    label: "Contact",
+    href: "https://wa.me/919591178734",
+    smooth: false,
+  },
 ];
 
-export default function Navbar() {
-  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string, smooth: boolean) => {
-    if (smooth) {
-      e.preventDefault();
-      const targetId = href.substring(1);
-      const element = document.getElementById(targetId);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0, y: 100 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
+const containerVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 100,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut",
     },
-  };
+  },
+};
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        duration: 0.5,
-      },
-    }),
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.1,
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  }),
+};
+
+export default function Navbar() {
+  const handleSmoothScroll = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+    smooth: boolean
+  ) => {
+    if (!smooth) return;
+
+    e.preventDefault();
+
+    if (href === "#") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const targetId = href.replace("#", "");
+    const element = document.getElementById(targetId);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
   };
 
   return (
@@ -53,29 +88,38 @@ export default function Navbar() {
         animate="visible"
         className="flex items-center gap-1 p-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl"
       >
-        {navItems.map((item, i) => (
-          <motion.a
-            key={item.label}
-            custom={i}
-            variants={itemVariants}
-            href={item.href}
-            onClick={(e) => handleSmoothScroll(e, item.href, item.smooth)}
-            target={item.smooth ? "_self" : "_blank"}
-            rel={item.smooth ? "" : "noopener noreferrer"}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-            className="p-3 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 relative group"
-          >
-            <item.icon className="w-5 h-5" />
-            <motion.span
-              initial={{ opacity: 0, y: 10 }}
-              whileHover={{ opacity: 1, y: 0 }}
-              className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap"
+        {navItems.map((item, i) => {
+          const Icon = item.icon;
+
+          return (
+            <motion.a
+              key={item.label}
+              custom={i}
+              variants={itemVariants}
+              href={item.href}
+              onClick={(e) =>
+                handleSmoothScroll(e, item.href, item.smooth)
+              }
+              target={item.smooth ? "_self" : "_blank"}
+              rel={item.smooth ? undefined : "noopener noreferrer"}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-3 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all duration-300 relative group"
             >
-              {item.label}
-            </motion.span>
-          </motion.a>
-        ))}
+              <Icon className="w-5 h-5" />
+
+              {/* Tooltip */}
+              <motion.span
+                initial={{ opacity: 0, y: 10 }}
+                whileHover={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white text-black text-xs font-semibold px-2 py-1 rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap"
+              >
+                {item.label}
+              </motion.span>
+            </motion.a>
+          );
+        })}
       </motion.nav>
     </div>
   );
