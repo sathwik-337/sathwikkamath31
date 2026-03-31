@@ -29,7 +29,6 @@ export default function Navbar() {
       y: 0,
       transition: {
         duration: 0.5,
-        type: "tween",
       },
     },
   };
@@ -42,7 +41,6 @@ export default function Navbar() {
       transition: {
         delay: i * 0.1,
         duration: 0.5,
-        type: "tween",
       },
     }),
   };
