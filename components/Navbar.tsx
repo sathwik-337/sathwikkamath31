@@ -33,7 +33,6 @@ const containerVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeOut",
     },
   },
 };
@@ -49,7 +48,6 @@ const itemVariants: Variants = {
     transition: {
       delay: i * 0.1,
       duration: 0.4,
-      ease: "easeOut",
     },
   }),
 };
